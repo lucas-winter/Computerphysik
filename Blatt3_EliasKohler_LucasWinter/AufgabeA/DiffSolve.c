@@ -4,7 +4,7 @@
 
 #define pi 3.1415926
 
-
+//Define basic function parameters
 #define DURATION 5
 #define OMEGA 5
 #define X0 1
@@ -36,6 +36,7 @@ int main()
     
 }
 
+//Prints values to the console
 void printValues()
 {
     for(int i = 0; i < 500; i++)
@@ -54,7 +55,8 @@ void printValues()
  */
 double executeSolve(void (*f)(double, double, double*, double*), int col)
 {
-   double x = 1;
+    //Set starting values
+    double x = 1;
     double v = 0;
     
     double xp, vp;
@@ -66,6 +68,7 @@ double executeSolve(void (*f)(double, double, double*, double*), int col)
     int index = 0;
     for(float t = 0; t < DURATION; t += step)
     {
+        //Execute step function
         (*f)(x, v, &xp, &vp);
 
         //printf("%g %g %g \n", t, x, v);
@@ -83,6 +86,7 @@ double executeSolve(void (*f)(double, double, double*, double*), int col)
         totalError += fabs(error);
         index++;
         //printf("%G %G\n", t, error);
+        
     }
 
     double avgError = totalError / DURATION * step;
@@ -90,19 +94,21 @@ double executeSolve(void (*f)(double, double, double*, double*), int col)
 }
 
 
-
+//Step function for euler solve
 void eulerStep(double x, double v, double* xp, double *vp)
 {
     *xp = x + step * v; //Update position
     *vp = v + step * function(x, 0);
 }
 
+//Step function for leap frog solve
 void lfStep(double x, double v, double * xp, double * vp)
 {
     *vp = v + step*function(x, 0);
     *xp = x + step * (*vp);
 }
 
+//Step function for runge kutta level 2
 void rkStep(double x, double v, double * xp, double * vp)
 {
     double kx1, kv1, kx2, kv2;
@@ -114,12 +120,13 @@ void rkStep(double x, double v, double * xp, double * vp)
     *vp = v + kv2;
 }
 
+//Function f
 double function(double x, double t)
 {
     return -OMEGA * OMEGA * x;
 }
 
-
+//Analytical solution to the problem
 double analyticFunction(double t)
 {
     return V0/OMEGA * sin(OMEGA*t) + X0 * cos(OMEGA * t);
