@@ -21,16 +21,48 @@ float differentiate();
 
 float findAmplitude();
 
+void omegaStep();
+
+void excersiseC();
+
+void excersiseD();
+
 int main()
 {
     values[0] = X0;
     values[1] = X0 + H * V0;
 
+    
+    excersiseC();
+    //excersiseD();
+
+    return 0;
+}
+
+void excersiseC()
+{
+    D = 0.3;
+    //Iterate over values of omega and find final amplitude for each
+    float omegaStep = 0.01; 
+    for(float o = 0.01; o < 3; o+= omegaStep)
+    {
+        omega = o;
+        verlet();
+        float amp = findAmplitude(STEPCOUNT - 2);
+        printf("%f %f\n", omega, amp);
+    }
+}
+
+
+void excersiseD()
+{
+    //Iterate over all values on grid
     float dampStep = 0.003;
     float omegaStep = 0.015;
     for(float d = 2*dampStep; d < 0.16; d+=dampStep)
     {
         D = d;
+        //Iterate over values of omega and find final amplitude for each
         for(float o = 0.6; o < 1.5; o+= omegaStep)
         {
             omega = o;
@@ -40,16 +72,17 @@ int main()
         }
         printf("\n");
     }
-    
-    return 0;
 }
-
+/** moves through array backwards and returns amplitude at first point with slope 0
+ * 
+ */
 float findAmplitude(int start)
 {
     int slope = differentiate(start) < 0 ? -1 : 1;
     for(int i = start - 1; i > 0; i--)
     {
         int currentSlope = differentiate(i) < 0 ? -1 : 1;
+        //Detect slope zero
         if(currentSlope != slope)
         {
             return fabs(values[i]);
@@ -59,6 +92,10 @@ float findAmplitude(int start)
     printf("ERROR: Point of last amplitude not found\n");
     return 0.0;
 }
+
+/**Perform verlet approximation
+ * 
+ */
 void verlet()
 {
     float t;
